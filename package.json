@@ -6,10 +6,16 @@
   "description": "LAWA Leave & FMLA Administration — proof of concept",
   "scripts": {
     "dev": "vite",
+    "server": "node --env-file-if-exists=.env server/index.js",
     "build": "vite build",
+    "start": "node server/index.js",
     "preview": "vite preview"
   },
+  "engines": {
+    "node": ">=22"
+  },
   "dependencies": {
+    "express": "^4.21.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

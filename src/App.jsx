@@ -514,14 +514,15 @@ Form submitted: WH-380-F (certification for family member's serious health condi
 Certification is INSUFFICIENT. Specifically missing: (1) the probable duration of the condition / how long care will be needed [item 6], and (2) the frequency and duration of care the employee will provide.
 Cure period: the employee has 7 calendar days from receipt to provide the missing information. Cure deadline: ${fmt("2026-06-09")}.`;
 
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  const res = await fetch("/api/messages", {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "claude-sonnet-4-20250514", max_tokens: 1000,
+      task: "draft", max_tokens: 1000,
       system: "You draft FMLA return-for-cure letters for an HR leave administrator. Write a professional, legally careful business letter that (1) thanks the employee for the submitted certification, (2) states plainly and specifically which required items are missing, (3) explains the 7-calendar-day cure period and the consequence if not cured, and (4) tells them how to submit the missing information. Use a respectful, non-accusatory tone. Do NOT make a final determination on the leave itself — the letter requests information; designation happens later. Output ONLY the letter text (date, recipient, body, signature). No preamble, no markdown, no placeholders left unfilled — use the facts provided. Around 200-240 words.",
       messages: [{ role: "user", content: "Draft the return-for-cure letter using these facts:\n\n" + facts }],
     }),
   });
+  if (!res.ok) throw new Error(`Proxy returned ${res.status}`);
   const data = await res.json();
   return data.content.filter((b) => b.type === "text").map((b) => b.text).join("\n").trim();
 }
@@ -682,14 +683,15 @@ function Assistant() {
     setMsgs(history); setInput(""); setBusy(true);
     try {
       const apiMsgs = history.filter((m) => m.role !== "sys").map((m) => ({ role: m.role === "u" ? "user" : "assistant", content: m.text }));
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch("/api/messages", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "claude-sonnet-4-20250514", max_tokens: 1000,
+          task: "chat", max_tokens: 1000,
           system: ctx.current,
           messages: apiMsgs,
         }),
       });
+      if (!res.ok) throw new Error(`Proxy returned ${res.status}`);
       const data = await res.json();
       const text = data.content.filter((b) => b.type === "text").map((b) => b.text).join("\n").trim();
       setMsgs((m) => [...m, { role: "ai", text: text || "I couldn't generate a response just now." }]);

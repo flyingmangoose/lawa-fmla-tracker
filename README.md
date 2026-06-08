@@ -6,48 +6,57 @@ This is a proof of concept. The balance and eligibility figures are illustrative
 
 ## Stack
 
-- React 18 + Vite
-- No backend, no database, no HRIS dependency. State is in-memory.
+- React 18 + Vite frontend
+- Express backend proxy (`server/index.js`) that holds the Anthropic API key server-side
+- No database, no HRIS dependency. Case state is in-memory.
 - Self-contained styling (Google Fonts via CSS import). No Tailwind or UI library.
 
-## Local development
+## The two AI features
 
-```bash
-npm install
-npm run dev      # http://localhost:5173
-npm run build    # outputs to dist/
-npm run preview  # serve the production build locally
-```
-
-## Deploy on DigitalOcean App Platform (static site)
-
-1. Push this repo to GitHub (see below).
-2. In DigitalOcean: Create > Apps > pick this GitHub repo.
-3. App Platform will detect a Node site. Configure as a Static Site:
-   - Build command: `npm run build`
-   - Output directory: `dist`
-4. Deploy.
-
-## IMPORTANT: the AI features need a backend before production
-
-Two features make a live call to the Anthropic API:
+Two features make a live call to the Anthropic Messages API, both routed through the backend proxy (never the browser directly):
 
 - The FMLA Assistant (chat)
 - The "Review &amp; draft cure letter" generation
 
-In the current code these call `https://api.anthropic.com/v1/messages` directly from the browser with no API key. That works only inside the Claude artifact sandbox, which injects auth. On a real deployment those calls will fail, and the code falls back to a clean offline state so nothing breaks during a demo.
+The frontend calls `POST /api/messages` with a `task` hint (`"chat"` or `"draft"`) instead of a model id. The proxy attaches the key, picks the model, and marks the assistant's grounding context as a prompt-cache breakpoint. If the key is missing or the call fails, the frontend falls back to a clean offline state so a demo never breaks.
 
-For production you need a small backend proxy that holds the key server-side. Never put an API key in client-side code.
+**Model selection lives server-side** so a model swap never needs a frontend redeploy. Defaults: chat → `claude-haiku-4-5-20251001`, draft → `claude-sonnet-4-6`. Override with `ANTHROPIC_MODEL_CHAT` / `ANTHROPIC_MODEL_DRAFT`.
 
-### Next step (intended for Claude Code)
+## Local development
 
-1. Add a backend endpoint (DigitalOcean App Platform service or function) that reads `ANTHROPIC_API_KEY` from an environment variable and forwards requests to the Anthropic Messages API.
-2. In `src/App.jsx`, repoint the two `fetch("https://api.anthropic.com/v1/messages", ...)` calls to that proxy path (for example `/api/messages`).
-3. Set `ANTHROPIC_API_KEY` as an encrypted environment variable in the App Platform settings.
+Requires Node 22+. Copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY`, then run the frontend and backend in two terminals:
 
-The two fetch call sites are in `src/App.jsx`:
-- `draftCureLetter()` (cure-letter generation)
-- the `send()` handler inside the `Assistant` component (chat)
+```bash
+npm install
+npm run server   # backend proxy on http://localhost:3001 (loads .env)
+npm run dev      # frontend on http://localhost:5173 (proxies /api → :3001)
+```
+
+For a production-like check on one port:
+
+```bash
+npm run build    # outputs to dist/
+npm start        # Express serves dist/ and /api on http://localhost:3001
+```
+
+## Deploy on DigitalOcean App Platform (web service)
+
+This is now a **Web Service**, not a static site — the Express server serves the built frontend and the `/api` proxy from one process.
+
+1. Push this repo to GitHub (see below).
+2. In DigitalOcean: Create > Apps > pick this GitHub repo.
+3. Configure the component as a **Web Service**:
+   - Build command: `npm run build`
+   - Run command: `npm start`
+   - HTTP port: App Platform sets `PORT`; the server reads it automatically.
+4. Add `ANTHROPIC_API_KEY` as an **encrypted** environment variable (optionally `ANTHROPIC_MODEL_CHAT` / `ANTHROPIC_MODEL_DRAFT`).
+5. Deploy. Check `GET /api/health` returns `{"ok":true,"keyConfigured":true}`.
+
+Never put an API key in client-side code or commit `.env`.
+
+## PHI &amp; compliance note
+
+The certification feature sends employee medical-certification details to the model. Before any real (non-demo) use, put a Business Associate Agreement / Zero Data Retention arrangement in place with the model provider and minimize/redact PHI in the backend before it leaves your infrastructure.
 
 ## Push to GitHub
 
