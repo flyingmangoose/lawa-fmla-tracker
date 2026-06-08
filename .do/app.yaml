@@ -1,0 +1,32 @@
+# DigitalOcean App Platform spec for the LAWA FMLA Tracker.
+# Deploy:  doctl apps create --spec .do/app.yaml
+# Update:  doctl apps update <APP_ID> --spec .do/app.yaml
+#
+# This runs as a single Web Service: `npm start` launches the Express
+# server (server/index.js), which serves the built frontend from dist/
+# and the /api proxy. App Platform sets PORT; the server reads it.
+name: lawa-fmla-tracker
+region: sfo3
+services:
+  - name: web
+    github:
+      repo: flyingmangoose/lawa-fmla-tracker
+      branch: main
+      deploy_on_push: true
+    build_command: npm run build
+    run_command: npm start
+    environment_slug: node-js
+    instance_size_slug: apps-s-1vcpu-0.5gb
+    instance_count: 1
+    http_port: 8080
+    health_check:
+      http_path: /api/health
+    # AI features are optional for the POC. To enable live Claude calls,
+    # add ANTHROPIC_API_KEY as an encrypted env var in the App Platform
+    # dashboard (Settings > web > Environment Variables), or uncomment and
+    # set the value below before running `doctl apps update`:
+    # envs:
+    #   - key: ANTHROPIC_API_KEY
+    #     scope: RUN_TIME
+    #     type: SECRET
+    #     value: sk-ant-...
