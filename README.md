@@ -2,6 +2,8 @@
 
 Standalone, integration-free AI-enabled leave compliance demo built for Los Angeles World Airports (HR Shared Services). Federal FMLA stacked with California CFRA and PDL, AI-assisted certification parsing and letter drafting, with every designation kept human-in-the-loop.
 
+**Developed by [Savoi](https://savoi.ai).**
+
 This is a proof of concept. The balance and eligibility figures are illustrative, and any outbound letter language should be reconciled against LAWA's approved templates and reviewed by counsel before real use.
 
 ## Stack

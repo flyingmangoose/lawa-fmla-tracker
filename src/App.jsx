@@ -18,61 +18,63 @@ const STYLES = `
   --sky:#3a8dde; --sky-2:#7fc0f5;
 }
 *{box-sizing:border-box}
-.fm-root{font-family:'Barlow',sans-serif;color:var(--ink);background:var(--paper);min-height:100vh;-webkit-font-smoothing:antialiased}
+.fm-root{font-family:'Barlow',sans-serif;color:var(--ink);background:var(--paper);min-height:100vh;-webkit-font-smoothing:antialiased;font-size:16px}
 .fm-serif{font-family:'Barlow Semi Condensed',sans-serif}
 .fm-mono{font-family:'IBM Plex Mono',monospace}
 
-.fm-shell{max-width:1180px;margin:0 auto}
-.fm-topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;background:var(--ink);color:#eef4fb}
-.fm-brand{display:flex;align-items:center;gap:12px}
-.fm-logo{height:34px;border-radius:6px;background:linear-gradient(160deg,#0a2647,#14416b);display:flex;align-items:center;justify-content:center;gap:2.5px;padding:0 8px}
-.fm-logo i{display:block;width:3px;border-radius:2px}
-.fm-pylon{height:3px;display:flex}
+.fm-shell{max-width:1440px;margin:0 auto}
+.fm-topbar{display:flex;align-items:center;justify-content:space-between;padding:20px 36px;background:var(--ink);color:#eef4fb}
+.fm-brand{display:flex;align-items:center;gap:15px}
+.fm-logo{height:42px;border-radius:7px;background:linear-gradient(160deg,#0a2647,#14416b);display:flex;align-items:center;justify-content:center;gap:3px;padding:0 10px}
+.fm-logo i{display:block;width:4px;border-radius:2px}
+.fm-pylon{height:4px;display:flex}
 .fm-pylon span{flex:1}
-.fm-brand h1{font-family:'Barlow Semi Condensed',sans-serif;font-size:18px;font-weight:600;margin:0;letter-spacing:.2px}
-.fm-brand .sub{font-size:11px;color:#9fb0bd;letter-spacing:.4px;text-transform:uppercase;margin-top:1px}
-.fm-poc{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#0a2647;background:var(--brass-2);padding:3px 8px;border-radius:4px;font-weight:600}
+.fm-brand h1{font-family:'Barlow Semi Condensed',sans-serif;font-size:23px;font-weight:600;margin:0;letter-spacing:.2px}
+.fm-brand .sub{font-size:13px;color:#9fb0bd;letter-spacing:.4px;text-transform:uppercase;margin-top:2px}
+.fm-poc{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#0a2647;background:var(--brass-2);padding:4px 10px;border-radius:5px;font-weight:600}
+.fm-by{font-size:12.5px;color:#9fb0bd;letter-spacing:.3px;margin-top:6px;text-align:right}
+.fm-by b{color:var(--brass-2);font-weight:600}
 
-.fm-nav{display:flex;gap:2px;padding:0 20px;background:var(--ink-2);overflow-x:auto}
-.fm-nav button{background:none;border:none;color:#aebcc7;font-family:'Barlow',sans-serif;font-size:13.5px;font-weight:500;padding:13px 16px;cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;transition:.15s}
+.fm-nav{display:flex;gap:2px;padding:0 28px;background:var(--ink-2);overflow-x:auto}
+.fm-nav button{background:none;border:none;color:#aebcc7;font-family:'Barlow',sans-serif;font-size:16px;font-weight:500;padding:16px 22px;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:.15s}
 .fm-nav button:hover{color:#fff}
 .fm-nav button.on{color:#fff;border-bottom-color:var(--brass-2)}
 
-.fm-body{padding:26px 28px 60px}
-.fm-h{font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:24px;margin:0 0 3px}
-.fm-sub{color:var(--muted);font-size:13.5px;margin:0 0 20px}
+.fm-body{padding:34px 36px 56px}
+.fm-h{font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:32px;margin:0 0 4px}
+.fm-sub{color:var(--muted);font-size:16px;margin:0 0 26px}
 
-.fm-grid{display:grid;gap:14px}
+.fm-grid{display:grid;gap:20px}
 .g4{grid-template-columns:repeat(4,1fr)}
 .g3{grid-template-columns:repeat(3,1fr)}
 .g2{grid-template-columns:1.4fr 1fr}
-@media(max-width:820px){.g4{grid-template-columns:repeat(2,1fr)}.g3,.g2{grid-template-columns:1fr}}
+@media(max-width:960px){.g4{grid-template-columns:repeat(2,1fr)}.g3,.g2{grid-template-columns:1fr}}
 
-.fm-card{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:18px}
-.fm-kpi .n{font-family:'Barlow Semi Condensed',sans-serif;font-size:30px;font-weight:600;line-height:1}
-.fm-kpi .l{font-size:12px;color:var(--muted);margin-top:7px;text-transform:uppercase;letter-spacing:.5px}
-.fm-kpi .d{font-size:11.5px;margin-top:8px;font-weight:500}
+.fm-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px}
+.fm-kpi .n{font-family:'Barlow Semi Condensed',sans-serif;font-size:46px;font-weight:600;line-height:1}
+.fm-kpi .l{font-size:14px;color:var(--muted);margin-top:11px;text-transform:uppercase;letter-spacing:.5px}
+.fm-kpi .d{font-size:14px;margin-top:11px;font-weight:500}
 
-.fm-tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;letter-spacing:.2px}
+.fm-tag{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:5px 12px;border-radius:20px;letter-spacing:.2px}
 .t-green{background:var(--green-bg);color:var(--green)}
 .t-amber{background:var(--amber-bg);color:var(--amber)}
 .t-red{background:var(--red-bg);color:var(--red)}
 .t-blue{background:var(--blue-bg);color:var(--blue)}
 .t-grey{background:#eee9de;color:var(--muted)}
 
-.fm-sec-h{display:flex;align-items:center;justify-content:space-between;margin:0 0 12px}
-.fm-sec-h h3{font-family:'Barlow Semi Condensed',sans-serif;font-size:16px;font-weight:600;margin:0}
+.fm-sec-h{display:flex;align-items:center;justify-content:space-between;margin:0 0 16px}
+.fm-sec-h h3{font-family:'Barlow Semi Condensed',sans-serif;font-size:20px;font-weight:600;margin:0}
 
-table.fm-tbl{width:100%;border-collapse:collapse;font-size:13px}
-.fm-tbl th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted-2);font-weight:600;padding:0 10px 9px;border-bottom:1px solid var(--line)}
-.fm-tbl td{padding:11px 10px;border-bottom:1px solid var(--line-2);vertical-align:middle}
+table.fm-tbl{width:100%;border-collapse:collapse;font-size:15.5px}
+.fm-tbl th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted-2);font-weight:600;padding:0 12px 11px;border-bottom:1px solid var(--line)}
+.fm-tbl td{padding:14px 12px;border-bottom:1px solid var(--line-2);vertical-align:middle}
 .fm-tbl tr:last-child td{border-bottom:none}
 .fm-tbl tr.click{cursor:pointer}
 .fm-tbl tr.click:hover td{background:var(--paper-2)}
 .emp{font-weight:600}
-.role{font-size:11.5px;color:var(--muted)}
+.role{font-size:14px;color:var(--muted)}
 
-.fm-btn{font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;border-radius:8px;padding:9px 15px;cursor:pointer;border:1px solid var(--ink);background:var(--ink);color:#eef4fb;transition:.15s}
+.fm-btn{font-family:'Barlow',sans-serif;font-size:15px;font-weight:600;border-radius:9px;padding:11px 19px;cursor:pointer;border:1px solid var(--ink);background:var(--ink);color:#eef4fb;transition:.15s}
 .fm-btn:hover{background:var(--ink-2)}
 .fm-btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
 .fm-btn.ghost:hover{background:var(--paper-2);border-color:var(--brass)}
@@ -80,39 +82,39 @@ table.fm-tbl{width:100%;border-collapse:collapse;font-size:13px}
 .fm-btn.brass:hover{background:#96652f}
 .fm-btn:disabled{opacity:.5;cursor:default}
 
-.fm-alert{display:flex;gap:11px;padding:13px 14px;border-radius:9px;font-size:13px;align-items:flex-start}
+.fm-alert{display:flex;gap:13px;padding:16px 17px;border-radius:10px;font-size:15px;align-items:flex-start}
 .al-amber{background:var(--amber-bg);border:1px solid #ecd9a8}
 .al-blue{background:var(--blue-bg);border:1px solid #c4d8e6}
-.fm-alert .ic{font-size:15px;line-height:1.2}
+.fm-alert .ic{font-size:18px;line-height:1.2}
 
-.bar{height:9px;border-radius:6px;background:var(--line);overflow:hidden;display:flex}
+.bar{height:11px;border-radius:7px;background:var(--line);overflow:hidden;display:flex}
 .bar span{display:block;height:100%}
 
 .drawer-bg{position:fixed;inset:0;background:rgba(22,36,47,.42);display:flex;justify-content:flex-end;z-index:50}
-.drawer{width:560px;max-width:94vw;background:var(--paper);height:100%;overflow-y:auto;box-shadow:-12px 0 40px rgba(0,0,0,.18)}
-.drawer-h{padding:20px 24px;border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:2}
-.drawer-c{padding:22px 24px}
-.x{background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);line-height:1}
+.drawer{width:680px;max-width:94vw;background:var(--paper);height:100%;overflow-y:auto;box-shadow:-12px 0 40px rgba(0,0,0,.18)}
+.drawer-h{padding:24px 28px;border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:2}
+.drawer-c{padding:26px 28px}
+.x{background:none;border:none;font-size:26px;cursor:pointer;color:var(--muted);line-height:1}
 
-.kv{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line-2);font-size:13px}
+.kv{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line-2);font-size:15px}
 .kv .k{color:var(--muted)}
 .kv .v{font-weight:600}
 
-.guard{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--brass);background:var(--paper-2);border:1px dashed var(--brass-2);border-radius:8px;padding:8px 12px;margin-top:12px}
+.guard{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--brass);background:var(--paper-2);border:1px dashed var(--brass-2);border-radius:9px;padding:11px 15px;margin-top:16px}
 
-.chat-wrap{display:flex;flex-direction:column;height:540px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.chat-log{flex:1;overflow-y:auto;padding:20px}
-.msg{margin-bottom:16px;display:flex;gap:10px}
-.msg .av{width:28px;height:28px;border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.chat-wrap{display:flex;flex-direction:column;height:640px;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.chat-log{flex:1;overflow-y:auto;padding:26px}
+.msg{margin-bottom:20px;display:flex;gap:12px}
+.msg .av{width:34px;height:34px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700}
 .av-ai{background:linear-gradient(135deg,var(--brass-2),var(--brass));color:#0a2647}
 .av-u{background:var(--ink);color:#eef4fb}
-.bub{font-size:13.5px;line-height:1.55;padding:11px 14px;border-radius:10px;max-width:84%;white-space:pre-wrap}
+.bub{font-size:15.5px;line-height:1.6;padding:13px 17px;border-radius:11px;max-width:84%;white-space:pre-wrap}
 .bub-ai{background:var(--paper-2);border:1px solid var(--line)}
 .bub-u{background:var(--ink);color:#eef4fb}
-.chat-in{display:flex;gap:8px;padding:14px;border-top:1px solid var(--line);background:var(--paper-2)}
-.chat-in input{flex:1;border:1px solid var(--line);border-radius:8px;padding:10px 13px;font-family:'Barlow',sans-serif;font-size:13.5px;outline:none}
+.chat-in{display:flex;gap:10px;padding:17px;border-top:1px solid var(--line);background:var(--paper-2)}
+.chat-in input{flex:1;border:1px solid var(--line);border-radius:9px;padding:13px 16px;font-family:'Barlow',sans-serif;font-size:15.5px;outline:none}
 .chat-in input:focus{border-color:var(--brass)}
-.chip{font-size:11.5px;border:1px solid var(--line);background:var(--card);border-radius:16px;padding:5px 11px;cursor:pointer;color:var(--ink-2)}
+.chip{font-size:14px;border:1px solid var(--line);background:var(--card);border-radius:18px;padding:7px 14px;cursor:pointer;color:var(--ink-2)}
 .chip:hover{border-color:var(--brass);color:var(--brass)}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--brass);display:inline-block;animation:bl 1s infinite}
 @keyframes bl{0%,80%,100%{opacity:.3}40%{opacity:1}}
@@ -120,16 +122,20 @@ table.fm-tbl{width:100%;border-collapse:collapse;font-size:13px}
 @keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
 .lt-bg{position:fixed;inset:0;background:rgba(22,36,47,.5);display:flex;align-items:flex-start;justify-content:center;z-index:60;padding:40px 16px;overflow-y:auto}
-.lt-sheet{background:#fff;width:660px;max-width:96vw;border-radius:10px;box-shadow:0 24px 64px rgba(0,0,0,.32);overflow:hidden;animation:fu .3s ease both}
-.lt-head{display:flex;justify-content:space-between;align-items:center;padding:13px 20px;background:var(--ink);color:#eef4fb}
-.lt-head h4{font-family:'Barlow Semi Condensed',sans-serif;margin:0;font-size:15px;font-weight:600}
-.lt-paper{padding:36px 44px;font-size:13.5px;line-height:1.72;color:#1d2a34;white-space:pre-wrap;min-height:230px}
-.lt-lh{display:flex;align-items:center;gap:11px;border-bottom:2px solid var(--brass);padding-bottom:13px;margin-bottom:22px}
-.lt-lh .mk{width:32px;height:32px;border-radius:6px;background:linear-gradient(135deg,var(--brass-2),var(--brass));display:flex;align-items:center;justify-content:center;font-family:'Barlow Semi Condensed',sans-serif;font-weight:700;color:#0a2647;flex-shrink:0}
-.lt-lh .nm{font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:15px;line-height:1.15}
-.lt-lh .ad{font-size:10.5px;color:var(--muted);letter-spacing:.3px}
-.lt-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 20px;background:var(--paper-2);border-top:1px solid var(--line)}
-.lt-gen{font-size:11.5px;color:var(--brass);display:flex;align-items:center;gap:6px}
+.lt-sheet{background:#fff;width:760px;max-width:96vw;border-radius:12px;box-shadow:0 24px 64px rgba(0,0,0,.32);overflow:hidden;animation:fu .3s ease both}
+.lt-head{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:var(--ink);color:#eef4fb}
+.lt-head h4{font-family:'Barlow Semi Condensed',sans-serif;margin:0;font-size:18px;font-weight:600}
+.lt-paper{padding:44px 52px;font-size:16px;line-height:1.75;color:#1d2a34;white-space:pre-wrap;min-height:260px}
+.lt-lh{display:flex;align-items:center;gap:13px;border-bottom:2px solid var(--brass);padding-bottom:15px;margin-bottom:26px}
+.lt-lh .mk{width:38px;height:38px;border-radius:7px;background:linear-gradient(135deg,var(--brass-2),var(--brass));display:flex;align-items:center;justify-content:center;font-family:'Barlow Semi Condensed',sans-serif;font-weight:700;color:#0a2647;flex-shrink:0}
+.lt-lh .nm{font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:18px;line-height:1.15}
+.lt-lh .ad{font-size:12px;color:var(--muted);letter-spacing:.3px}
+.lt-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 24px;background:var(--paper-2);border-top:1px solid var(--line)}
+.lt-gen{font-size:13.5px;color:var(--brass);display:flex;align-items:center;gap:7px}
+
+.fm-foot{margin:0 36px;padding:22px 0 36px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted-2)}
+.fm-foot b{color:var(--brass);font-weight:600}
+.fm-foot span:first-child{font-size:14px;color:var(--muted)}
 `;
 
 /* ---------------- demo data ---------------- */
@@ -234,7 +240,7 @@ function StatBar({ used, cap, color }) {
   return (
     <div>
       <div className="bar"><span style={{ width: pct + "%", background: color }} /></div>
-      <div style={{ fontSize: 11.5, color: "var(--muted)", marginTop: 5 }} className="fm-mono">
+      <div style={{ fontSize: 13.8, color: "var(--muted)", marginTop: 5 }} className="fm-mono">
         {used} / {cap} wks used · {(cap - used).toFixed(1)} remaining
       </div>
     </div>
@@ -269,8 +275,8 @@ function Dashboard({ go }) {
                 return (
                   <tr key={c.id} className="click" onClick={() => go("cases", c.id)}>
                     <td><div className="emp">{c.name}</div><div className="role">{c.role}</div></td>
-                    <td style={{ fontSize: 12.5 }}>{c.nextDeadline.what}</td>
-                    <td className="fm-mono" style={{ fontSize: 12 }}>{fmt(c.nextDeadline.when)}</td>
+                    <td style={{ fontSize: 15 }}>{c.nextDeadline.what}</td>
+                    <td className="fm-mono" style={{ fontSize: 14.4 }}>{fmt(c.nextDeadline.when)}</td>
                     <td><Tag c={tag}>{dd <= 0 ? "due" : `${dd}d`}</Tag></td>
                   </tr>
                 );
@@ -284,7 +290,7 @@ function Dashboard({ go }) {
           {flags.map((c) => (
             <div key={c.id} className={`fm-alert ${c.flag.tag === "t-red" ? "al-amber" : "al-blue"}`} style={{ marginBottom: 9, cursor: "pointer" }} onClick={() => go("cases", c.id)}>
               <span className="ic">{c.flag.tag === "t-red" ? "⚑" : "◎"}</span>
-              <div><strong style={{ fontSize: 12.5 }}>{c.name}</strong><div style={{ fontSize: 12.5, color: "var(--ink-2)", marginTop: 2 }}>{c.flag.text}</div></div>
+              <div><strong style={{ fontSize: 15 }}>{c.name}</strong><div style={{ fontSize: 15, color: "var(--ink-2)", marginTop: 2 }}>{c.flag.text}</div></div>
             </div>
           ))}
           <div className="guard"><span>◆</span> AI flags patterns and deadlines. It never makes a designation or adverse call — those stay with HR.</div>
@@ -306,14 +312,14 @@ function Employees() {
         <div className="fm-sec-h">
           <h3>Workday payroll export</h3>
           {phase === "idle" && <button className="fm-btn brass" onClick={run}>⤴ Upload export (.csv)</button>}
-          {phase === "running" && <span style={{ fontSize: 12.5, color: "var(--brass)" }}>Normalizing columns &amp; reconciling…</span>}
+          {phase === "running" && <span style={{ fontSize: 15, color: "var(--brass)" }}>Normalizing columns &amp; reconciling…</span>}
           {phase === "done" && <Tag c="t-green">3,200 records reconciled</Tag>}
         </div>
-        {phase === "idle" && <p style={{ fontSize: 13, color: "var(--muted)", margin: 0 }}>Drop the latest pay-period export. The tool maps non-standard column headers, matches employees to existing records, and recomputes the 1,250-hour / 12-month eligibility test — no manual spreadsheet work.</p>}
-        {phase === "running" && <div style={{ fontSize: 13, color: "var(--ink-2)" }}><span className="dot" /> Mapping 41 columns → standard schema · matching on employee ID + name · recomputing eligibility</div>}
+        {phase === "idle" && <p style={{ fontSize: 15.6, color: "var(--muted)", margin: 0 }}>Drop the latest pay-period export. The tool maps non-standard column headers, matches employees to existing records, and recomputes the 1,250-hour / 12-month eligibility test — no manual spreadsheet work.</p>}
+        {phase === "running" && <div style={{ fontSize: 15.6, color: "var(--ink-2)" }}><span className="dot" /> Mapping 41 columns → standard schema · matching on employee ID + name · recomputing eligibility</div>}
         {phase === "done" && (
           <div className="fm-alert al-blue"><span className="ic">◎</span>
-            <div style={{ fontSize: 13 }}>AI normalized <strong>41 source columns</strong> to the standard schema and matched <strong>3,200 of 3,200</strong> employees. <strong>2 employees newly approaching the 1,250-hour threshold</strong> were flagged for an eligibility notice.</div>
+            <div style={{ fontSize: 15.6 }}>AI normalized <strong>41 source columns</strong> to the standard schema and matched <strong>3,200 of 3,200</strong> employees. <strong>2 employees newly approaching the 1,250-hour threshold</strong> were flagged for an eligibility notice.</div>
           </div>
         )}
       </div>
@@ -354,7 +360,7 @@ function Cases({ openId, go }) {
               return (
                 <tr key={c.id} className="click" onClick={() => go("cases", c.id)}>
                   <td><div className="emp">{c.name}</div><div className="role fm-mono">{c.id}</div></td>
-                  <td style={{ fontSize: 12.5, maxWidth: 200 }}>{c.reason}</td>
+                  <td style={{ fontSize: 15, maxWidth: 200 }}>{c.reason}</td>
                   <td><Tag c="t-grey">{c.type}</Tag></td>
                   <td style={{ minWidth: 130 }}><StatBar used={c.used.fmla} cap={cap} color={c.statusTag === "t-red" ? "var(--red)" : "var(--green)"} /></td>
                   <td><Tag c={c.statusTag}>{c.status}</Tag></td>
@@ -378,9 +384,9 @@ function CaseDrawer({ c, close }) {
         <div className="drawer-h">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
-              <div className="fm-mono" style={{ fontSize: 11.5, color: "var(--muted)" }}>{c.id}</div>
-              <h3 className="fm-serif" style={{ fontSize: 20, margin: "2px 0 0", fontWeight: 600 }}>{c.name}</h3>
-              <div style={{ fontSize: 12.5, color: "var(--muted)" }}>{c.role} · {c.dept}</div>
+              <div className="fm-mono" style={{ fontSize: 13.8, color: "var(--muted)" }}>{c.id}</div>
+              <h3 className="fm-serif" style={{ fontSize: 24, margin: "2px 0 0", fontWeight: 600 }}>{c.name}</h3>
+              <div style={{ fontSize: 15, color: "var(--muted)" }}>{c.role} · {c.dept}</div>
             </div>
             <button className="x" onClick={close}>×</button>
           </div>
@@ -391,18 +397,18 @@ function CaseDrawer({ c, close }) {
         <div className="drawer-c">
           {c.flag && (
             <div className={`fm-alert ${c.flag.tag === "t-red" ? "al-amber" : "al-blue"}`} style={{ marginBottom: 16 }}>
-              <span className="ic">⚑</span><div style={{ fontSize: 12.5 }}><strong>AI flag</strong> — {c.flag.text}</div>
+              <span className="ic">⚑</span><div style={{ fontSize: 15 }}><strong>AI flag</strong> — {c.flag.text}</div>
             </div>
           )}
 
-          <h4 className="fm-serif" style={{ fontSize: 14, margin: "0 0 8px" }}>Balance engine</h4>
+          <h4 className="fm-serif" style={{ fontSize: 16.8, margin: "0 0 8px" }}>Balance engine</h4>
           <div className="fm-card" style={{ marginBottom: 16 }}>
             <div style={{ marginBottom: c.used.pdl || c.used.cfra ? 14 : 0 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 6 }}>{c.mcgw ? "FMLA — Military Caregiver (26 wk)" : "FMLA (12 wk)"}</div>
+              <div style={{ fontSize: 14.4, fontWeight: 600, marginBottom: 6 }}>{c.mcgw ? "FMLA — Military Caregiver (26 wk)" : "FMLA (12 wk)"}</div>
               <StatBar used={c.used.fmla} cap={cap} color={c.statusTag === "t-red" ? "var(--red)" : "var(--green)"} />
             </div>
-            {c.used.pdl > 0 && <div style={{ marginBottom: 14 }}><div style={{ fontSize: 12, fontWeight: 600, marginBottom: 6 }}>CA PDL (up to ~17.3 wk)</div><StatBar used={c.used.pdl} cap={17.3} color="var(--blue)" /></div>}
-            {c.used.cfra > 0 && <div><div style={{ fontSize: 12, fontWeight: 600, marginBottom: 6 }}>CFRA (12 wk)</div><StatBar used={c.used.cfra} cap={12} color="var(--brass)" /></div>}
+            {c.used.pdl > 0 && <div style={{ marginBottom: 14 }}><div style={{ fontSize: 14.4, fontWeight: 600, marginBottom: 6 }}>CA PDL (up to ~17.3 wk)</div><StatBar used={c.used.pdl} cap={17.3} color="var(--blue)" /></div>}
+            {c.used.cfra > 0 && <div><div style={{ fontSize: 14.4, fontWeight: 600, marginBottom: 6 }}>CFRA (12 wk)</div><StatBar used={c.used.cfra} cap={12} color="var(--brass)" /></div>}
             {c.stack && <div className="guard" style={{ marginTop: 14 }}><span>◆</span> PDL runs concurrent with FMLA but <strong>not</strong> CFRA. CFRA bonding (12 wks) begins after disability ends — the stacking that adds up to ~7 months total.</div>}
           </div>
 
@@ -412,9 +418,9 @@ function CaseDrawer({ c, close }) {
           <div className="kv"><span className="k">Certification</span><span className="v"><Tag c={c.cert.state === "Sufficient" ? "t-green" : c.cert.state === "Insufficient" ? "t-red" : "t-grey"}>{c.cert.state}</Tag></span></div>
           <div className="kv"><span className="k">Next deadline</span><span className="v">{c.nextDeadline.what} · {fmt(c.nextDeadline.when)}</span></div>
 
-          <p style={{ fontSize: 12.5, color: "var(--ink-2)", lineHeight: 1.55, marginTop: 14, background: "var(--paper-2)", padding: "12px 14px", borderRadius: 9, border: "1px solid var(--line)" }}>{c.summary}</p>
+          <p style={{ fontSize: 15, color: "var(--ink-2)", lineHeight: 1.55, marginTop: 14, background: "var(--paper-2)", padding: "12px 14px", borderRadius: 9, border: "1px solid var(--line)" }}>{c.summary}</p>
 
-          <h4 className="fm-serif" style={{ fontSize: 14, margin: "18px 0 8px" }}>Designation decision</h4>
+          <h4 className="fm-serif" style={{ fontSize: 16.8, margin: "18px 0 8px" }}>Designation decision</h4>
           <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
             <button className={`fm-btn ${designation === "approved" ? "brass" : "ghost"}`} onClick={() => setDesignation("approved")}>Designate as FMLA</button>
             <button className={`fm-btn ${designation === "pending" ? "brass" : "ghost"}`} onClick={() => setDesignation("pending")}>Hold pending cert</button>
@@ -542,14 +548,14 @@ function LetterModal({ letter, onClose }) {
             <div><div className="nm">Los Angeles World Airports</div><div className="ad">Human Resources · Leave Administration · 1 World Way, Los Angeles, CA 90045</div></div>
           </div>
           {letter.loading
-            ? <div style={{ color: "var(--brass)", fontSize: 13 }}><span className="dot" /> <span className="dot" style={{ animationDelay: ".2s" }} /> <span className="dot" style={{ animationDelay: ".4s" }} /> Drafting from the parsed certification…</div>
+            ? <div style={{ color: "var(--brass)", fontSize: 15.6 }}><span className="dot" /> <span className="dot" style={{ animationDelay: ".2s" }} /> <span className="dot" style={{ animationDelay: ".4s" }} /> Drafting from the parsed certification…</div>
             : letter.body}
         </div>
         <div className="lt-foot">
           <span className="lt-gen">{letter.ai ? "◆ Drafted by AI from parsed certification" : "◆ Filled from case data"} · held for HR signature</span>
           <div style={{ display: "flex", gap: 8 }}>
-            <button className="fm-btn ghost" style={{ padding: "7px 13px", fontSize: 12.5 }} onClick={onClose}>Close</button>
-            <button className="fm-btn brass" style={{ padding: "7px 13px", fontSize: 12.5 }} disabled={letter.loading}>Sign &amp; send</button>
+            <button className="fm-btn ghost" style={{ padding: "7px 13px", fontSize: 15 }} onClick={onClose}>Close</button>
+            <button className="fm-btn brass" style={{ padding: "7px 13px", fontSize: 15 }} disabled={letter.loading}>Sign &amp; send</button>
           </div>
         </div>
       </div>
@@ -582,7 +588,7 @@ function Certs() {
         <div className="fm-card">
           <div className="fm-sec-h"><h3>WH-380-F · Robert Hayes</h3>{!parsed ? <button className="fm-btn brass" onClick={() => setParsed(true)}>⤴ Upload &amp; parse</button> : <Tag c="t-red">Insufficient</Tag>}</div>
           {!parsed ? (
-            <div style={{ border: "1.5px dashed var(--line)", borderRadius: 10, padding: "34px 18px", textAlign: "center", color: "var(--muted)", fontSize: 13 }}>Drop certification PDF here</div>
+            <div style={{ border: "1.5px dashed var(--line)", borderRadius: 10, padding: "34px 18px", textAlign: "center", color: "var(--muted)", fontSize: 15.6 }}>Drop certification PDF here</div>
           ) : (
             <div className="fade">
               <div className="kv"><span className="k">Patient relationship</span><span className="v">Spouse</span></div>
@@ -592,7 +598,7 @@ function Certs() {
               <div className="kv"><span className="k">Provider signature</span><span className="v">Present · 2026-05-25</span></div>
               <div className="fm-alert al-amber" style={{ marginTop: 14 }}>
                 <span className="ic">⚑</span>
-                <div style={{ fontSize: 12.5 }}>Certification is <strong>incomplete</strong>: missing probable duration and frequency of care. A return-for-cure letter is drafted and ready for HR to send. Employee has 7 calendar days to cure.</div>
+                <div style={{ fontSize: 15 }}>Certification is <strong>incomplete</strong>: missing probable duration and frequency of care. A return-for-cure letter is drafted and ready for HR to send. Employee has 7 calendar days to cure.</div>
               </div>
               <button className="fm-btn ghost" style={{ marginTop: 12 }} onClick={genCure}>Review &amp; draft cure letter →</button>
             </div>
@@ -601,7 +607,7 @@ function Certs() {
 
         <div className="fm-card" style={{ background: "var(--paper-2)" }}>
           <div className="fm-sec-h"><h3>How parsing works</h3><Tag c="t-grey">PHI-aware</Tag></div>
-          <ol style={{ fontSize: 13, lineHeight: 1.7, paddingLeft: 18, margin: 0, color: "var(--ink-2)" }}>
+          <ol style={{ fontSize: 15.6, lineHeight: 1.7, paddingLeft: 18, margin: 0, color: "var(--ink-2)" }}>
             <li>Cert is processed on a confidential, access-restricted path — medical data is kept separate from the general case file.</li>
             <li>Required fields are extracted (relationship, onset, duration, frequency, signature).</li>
             <li>Sufficiency is checked against the regulatory checklist.</li>
@@ -652,9 +658,9 @@ function Notices() {
               <tr key={i.n + i.who}>
                 <td className="emp">{i.n}{i.key === "cure" && <span style={{ marginLeft: 7 }}><Tag c="t-grey">AI-drafted</Tag></span>}</td>
                 <td>{i.who}</td>
-                <td style={{ fontSize: 12, color: "var(--muted)" }}>{i.d}</td>
+                <td style={{ fontSize: 14.4, color: "var(--muted)" }}>{i.d}</td>
                 <td><Tag c={i.st === "Sent" ? "t-green" : "t-amber"}>{i.st}</Tag></td>
-                <td><button className="fm-btn ghost" style={{ padding: "6px 12px", fontSize: 12 }} onClick={() => open(i)}>{i.st === "Sent" ? "View" : "Review"}</button></td>
+                <td><button className="fm-btn ghost" style={{ padding: "6px 12px", fontSize: 14.4 }} onClick={() => open(i)}>{i.st === "Sent" ? "View" : "Review"}</button></td>
               </tr>
             ))}
           </tbody>
@@ -741,15 +747,18 @@ export default function App() {
         <div className="fm-shell" style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div className="fm-brand">
             <div className="fm-logo" aria-label="LAWA">
+              <i style={{ height: 14, background: "var(--sky)" }} />
+              <i style={{ height: 24, background: "var(--sky-2)" }} />
+              <i style={{ height: 30, background: "var(--brass-2)" }} />
+              <i style={{ height: 20, background: "#ffffff" }} />
               <i style={{ height: 11, background: "var(--sky)" }} />
-              <i style={{ height: 19, background: "var(--sky-2)" }} />
-              <i style={{ height: 24, background: "var(--brass-2)" }} />
-              <i style={{ height: 16, background: "#ffffff" }} />
-              <i style={{ height: 9, background: "var(--sky)" }} />
             </div>
             <div><h1>LAWA Leave &amp; FMLA</h1><div className="sub">Los Angeles World Airports · HR Shared Services</div></div>
           </div>
-          <span className="fm-poc">Proof of Concept</span>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+            <span className="fm-poc">Proof of Concept</span>
+            <div className="fm-by">Developed by <b>Savoi</b></div>
+          </div>
         </div>
       </div>
       <div className="fm-pylon">
@@ -769,6 +778,10 @@ export default function App() {
           {tab === "notice" && <Notices />}
           {tab === "ai" && <Assistant />}
         </div>
+        <footer className="fm-foot">
+          <span>Developed by <b>Savoi</b> · AI-enabled leave &amp; FMLA compliance</span>
+          <span>Proof of concept · balances and eligibility figures are illustrative · every designation stays with HR</span>
+        </footer>
       </div>
     </div>
   );
