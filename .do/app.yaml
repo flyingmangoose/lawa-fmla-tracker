@@ -7,6 +7,9 @@
 # and the /api proxy. App Platform sets PORT; the server reads it.
 name: lawa-fmla-tracker
 region: sfo3
+domains:
+  - domain: fmla.savoi.ai
+    type: PRIMARY
 services:
   - name: web
     github:
