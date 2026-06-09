@@ -136,6 +136,14 @@ table.fm-tbl{width:100%;border-collapse:collapse;font-size:15.5px}
 .fm-foot{margin:0 36px;padding:22px 0 36px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted-2)}
 .fm-foot b{color:var(--brass);font-weight:600}
 .fm-foot span:first-child{font-size:14px;color:var(--muted)}
+
+.fm-form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fm-field{display:flex;flex-direction:column;gap:5px}
+.fm-field.fm-col2{grid-column:1 / -1}
+.fm-field>span{font-size:12.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.fm-field input,.fm-field select{border:1px solid var(--line);border-radius:9px;padding:11px 13px;font-family:'Barlow',sans-serif;font-size:15px;color:var(--ink);background:#fff;outline:none}
+.fm-field input:focus,.fm-field select:focus{border-color:var(--brass)}
+@media(max-width:640px){.fm-form{grid-template-columns:1fr}.fm-field.fm-col2{grid-column:auto}}
 `;
 
 /* ---------------- demo data ---------------- */
@@ -220,11 +228,20 @@ const PENDING_ELIG = [
 
 const fmt = (d) => new Date(d + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 const daysFromToday = (d) => Math.round((new Date(d) - new Date(TODAY)) / 864e5);
+const addDays = (d, n) => { const t = new Date(d + "T00:00:00"); t.setDate(t.getDate() + n); return t.toISOString().slice(0, 10); };
+const statusToTag = (s) => (s === "Active" ? "t-green" : s === "Exhausting" ? "t-red" : "t-amber");
+
+/* next FM-YYYY-#### id from the highest existing numeric suffix */
+function nextCaseId(cases) {
+  const year = TODAY.slice(0, 4);
+  const max = cases.reduce((m, c) => Math.max(m, parseInt(c.id.split("-").pop(), 10) || 0), 0);
+  return `FM-${year}-${String(max + 1).padStart(4, "0")}`;
+}
 
 /* build a compact grounding context for the live assistant */
-function buildContext() {
+function buildContext(cases) {
   let s = `LAWA FMLA Tracker — live case data (as of ${fmt(TODAY)}). Entitlements: standard FMLA & CFRA = 12 workweeks (480 hrs full-time); CA PDL = up to 4 months (~17.3 wks) for pregnancy disability and runs concurrent with FMLA but NOT CFRA; CFRA bonding (12 wks) begins after PDL ends; Military Caregiver FMLA = 26 weeks.\n\nCases:\n`;
-  CASES.forEach((c) => {
+  cases.forEach((c) => {
     const cap = c.mcgw ? 26 : 12;
     s += `- ${c.name} (${c.id}), ${c.role}, ${c.dept}. Reason: ${c.reason}. Type: ${c.type}. Status: ${c.status}. Leaves: ${c.leaves.join(", ")}. FMLA used: ${c.used.fmla} of ${cap} wks${c.used.pdl ? `; PDL used: ${c.used.pdl} wks (of ~17.3)` : ""}${c.used.cfra ? `; CFRA used: ${c.used.cfra} of 12 wks` : ""}. Cert: ${c.cert.state}. Next deadline: ${c.nextDeadline.what} on ${fmt(c.nextDeadline.when)}.${c.flag ? ` FLAG: ${c.flag.text}` : ""}\n`;
   });
@@ -248,19 +265,21 @@ function StatBar({ used, cap, color }) {
 }
 
 /* ---------------- views ---------------- */
-function Dashboard({ go }) {
-  const deadlines = [...CASES].sort((a, b) => daysFromToday(a.nextDeadline.when) - daysFromToday(b.nextDeadline.when)).slice(0, 5);
-  const flags = CASES.filter((c) => c.flag);
+function Dashboard({ go, cases }) {
+  const deadlines = [...cases].sort((a, b) => daysFromToday(a.nextDeadline.when) - daysFromToday(b.nextDeadline.when)).slice(0, 5);
+  const flags = cases.filter((c) => c.flag);
+  const dueSoon = cases.filter((c) => daysFromToday(c.nextDeadline.when) <= 14).length;
+  const toCure = cases.filter((c) => c.cert.state === "Insufficient").length;
   return (
     <div className="fade">
       <h2 className="fm-h">Leave compliance overview</h2>
-      <p className="fm-sub">Los Angeles World Airports · 3,200 employees · {CASES.length} active cases</p>
+      <p className="fm-sub">Los Angeles World Airports · 3,200 employees · {cases.length} active cases</p>
 
       <div className="fm-grid g4" style={{ marginBottom: 14 }}>
-        <div className="fm-card fm-kpi"><div className="n">{CASES.length}</div><div className="l">Active cases</div><div className="d" style={{ color: "var(--green)" }}>All within entitlement</div></div>
-        <div className="fm-card fm-kpi"><div className="n">3</div><div className="l">Deadlines ≤ 14 days</div><div className="d" style={{ color: "var(--amber)" }}>Action required</div></div>
-        <div className="fm-card fm-kpi"><div className="n">1</div><div className="l">Certs to cure</div><div className="d" style={{ color: "var(--red)" }}>Cure clock running</div></div>
-        <div className="fm-card fm-kpi"><div className="n">2</div><div className="l">Approaching eligibility</div><div className="d" style={{ color: "var(--blue)" }}>From hours upload</div></div>
+        <div className="fm-card fm-kpi"><div className="n">{cases.length}</div><div className="l">Active cases</div><div className="d" style={{ color: "var(--green)" }}>All within entitlement</div></div>
+        <div className="fm-card fm-kpi"><div className="n">{dueSoon}</div><div className="l">Deadlines ≤ 14 days</div><div className="d" style={{ color: "var(--amber)" }}>Action required</div></div>
+        <div className="fm-card fm-kpi"><div className="n">{toCure}</div><div className="l">Certs to cure</div><div className="d" style={{ color: "var(--red)" }}>Cure clock running</div></div>
+        <div className="fm-card fm-kpi"><div className="n">{PENDING_ELIG.length}</div><div className="l">Approaching eligibility</div><div className="d" style={{ color: "var(--blue)" }}>From hours upload</div></div>
       </div>
 
       <div className="fm-grid g2">
@@ -300,7 +319,7 @@ function Dashboard({ go }) {
   );
 }
 
-function Employees() {
+function Employees({ startCase }) {
   const [phase, setPhase] = useState("idle"); // idle | running | done
   const run = () => { setPhase("running"); setTimeout(() => setPhase("done"), 1900); };
   return (
@@ -327,7 +346,7 @@ function Employees() {
       <div className="fm-card">
         <div className="fm-sec-h"><h3>Approaching eligibility</h3><Tag c="t-blue">Auto-computed</Tag></div>
         <table className="fm-tbl">
-          <thead><tr><th>Employee</th><th>Hours (rolling 12 mo)</th><th>Tenure</th><th>Status</th></tr></thead>
+          <thead><tr><th>Employee</th><th>Hours (rolling 12 mo)</th><th>Tenure</th><th>Status</th><th></th></tr></thead>
           <tbody>
             {PENDING_ELIG.map((e) => (
               <tr key={e.name}>
@@ -335,6 +354,7 @@ function Employees() {
                 <td className="fm-mono">{e.hours.toLocaleString()} / 1,250</td>
                 <td className="fm-mono">{e.months} mo</td>
                 <td><Tag c="t-amber">{e.note}</Tag></td>
+                <td style={{ textAlign: "right" }}><button className="fm-btn ghost" style={{ padding: "7px 13px", fontSize: 13 }} onClick={() => startCase({ name: e.name, role: e.role, reason: "" })}>Start case →</button></td>
               </tr>
             ))}
           </tbody>
@@ -345,17 +365,22 @@ function Employees() {
   );
 }
 
-function Cases({ openId, go }) {
-  const sel = CASES.find((c) => c.id === openId);
+function Cases({ openId, go, cases, startCase }) {
+  const sel = cases.find((c) => c.id === openId);
   return (
     <div className="fade">
-      <h2 className="fm-h">Leave cases</h2>
-      <p className="fm-sub">{CASES.length} active · federal FMLA stacked with California CFRA &amp; PDL where applicable</p>
+      <div className="fm-sec-h">
+        <div>
+          <h2 className="fm-h">Leave cases</h2>
+          <p className="fm-sub" style={{ margin: 0 }}>{cases.length} active · federal FMLA stacked with California CFRA &amp; PDL where applicable</p>
+        </div>
+        <button className="fm-btn brass" onClick={() => startCase()}>+ New Case</button>
+      </div>
       <div className="fm-card">
         <table className="fm-tbl">
           <thead><tr><th>Case / Employee</th><th>Reason</th><th>Type</th><th>Entitlement</th><th>Status</th></tr></thead>
           <tbody>
-            {CASES.map((c) => {
+            {cases.map((c) => {
               const cap = c.mcgw ? 26 : 12;
               return (
                 <tr key={c.id} className="click" onClick={() => go("cases", c.id)}>
@@ -671,8 +696,7 @@ function Notices() {
   );
 }
 
-function Assistant() {
-  const ctx = useRef(buildContext());
+function Assistant({ cases }) {
   const [msgs, setMsgs] = useState([
     { role: "ai", text: "I'm your FMLA assistant, grounded in LAWA's live case data. Ask me about balances, deadlines, or eligibility — I'll compute and explain, but every designation stays with you." },
   ]);
@@ -693,7 +717,7 @@ function Assistant() {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           task: "chat", max_tokens: 1000,
-          system: ctx.current,
+          system: buildContext(cases),
           messages: apiMsgs,
         }),
       });
@@ -734,11 +758,91 @@ function Assistant() {
   );
 }
 
+/* ---------------- new case form ---------------- */
+const LEAVE_OPTIONS = ["FMLA", "CFRA", "PDL (CA)", "FMLA (Military Caregiver — 26 wk)"];
+
+function NewCaseModal({ draft, cases, onClose, onSave }) {
+  const [f, setF] = useState({
+    name: draft.name || "", role: draft.role || "", dept: draft.dept || "",
+    reason: draft.reason || "", type: "Continuous", leaves: ["FMLA", "CFRA"],
+    status: "Pending cert", certState: "Pending",
+    deadlineWhat: "Certification due", deadlineWhen: addDays(TODAY, 15), summary: "",
+  });
+  const set = (k, v) => setF((p) => ({ ...p, [k]: v }));
+  const toggleLeave = (l) => setF((p) => ({ ...p, leaves: p.leaves.includes(l) ? p.leaves.filter((x) => x !== l) : [...p.leaves, l] }));
+
+  const valid = f.name.trim() && f.role.trim() && f.reason.trim() && f.leaves.length > 0;
+
+  const save = () => {
+    if (!valid) return;
+    const mcgw = f.leaves.some((l) => l.includes("Military Caregiver"));
+    const stack = f.leaves.some((l) => l.includes("PDL"));
+    const newCase = {
+      id: nextCaseId(cases), name: f.name.trim(), role: f.role.trim(), dept: f.dept.trim() || "—",
+      reason: f.reason.trim(), type: f.type, status: f.status, statusTag: statusToTag(f.status),
+      opened: TODAY, leaves: f.leaves, flag: null,
+      cert: { state: f.certState, note: "" },
+      summary: f.summary.trim() || "Case opened by HR. Balances begin at zero; designation pending review.",
+      used: { fmla: 0, cfra: 0, pdl: 0 },
+      nextDeadline: { what: f.deadlineWhat.trim() || "Next review", when: f.deadlineWhen },
+      ...(mcgw ? { mcgw: true } : {}), ...(stack ? { stack: true } : {}),
+    };
+    onSave(newCase);
+  };
+
+  return (
+    <div className="lt-bg" onClick={onClose}>
+      <div className="lt-sheet" style={{ width: 640 }} onClick={(e) => e.stopPropagation()}>
+        <div className="lt-head"><h4>New leave case</h4><button className="x" style={{ color: "#9fb0bd" }} onClick={onClose}>×</button></div>
+        <div style={{ padding: "24px 28px", maxHeight: "70vh", overflowY: "auto" }}>
+          <div className="fm-form">
+            <label className="fm-field"><span>Employee name</span><input value={f.name} onChange={(e) => set("name", e.target.value)} placeholder="Full name" /></label>
+            <label className="fm-field"><span>Role</span><input value={f.role} onChange={(e) => set("role", e.target.value)} placeholder="Job title" /></label>
+            <label className="fm-field"><span>Department</span><input value={f.dept} onChange={(e) => set("dept", e.target.value)} placeholder="Department" /></label>
+            <label className="fm-field"><span>Leave type</span>
+              <select value={f.type} onChange={(e) => set("type", e.target.value)}><option>Continuous</option><option>Intermittent</option></select>
+            </label>
+            <label className="fm-field fm-col2"><span>Reason for leave</span><input value={f.reason} onChange={(e) => set("reason", e.target.value)} placeholder="e.g. Own serious health condition (surgery + recovery)" /></label>
+            <div className="fm-field fm-col2"><span>Applicable leaves</span>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 4 }}>
+                {LEAVE_OPTIONS.map((l) => (
+                  <button key={l} type="button" className={`fm-btn ${f.leaves.includes(l) ? "brass" : "ghost"}`} style={{ padding: "7px 12px", fontSize: 13 }} onClick={() => toggleLeave(l)}>{f.leaves.includes(l) ? "✓ " : ""}{l}</button>
+                ))}
+              </div>
+            </div>
+            <label className="fm-field"><span>Status</span>
+              <select value={f.status} onChange={(e) => set("status", e.target.value)}><option>Pending cert</option><option>Active</option></select>
+            </label>
+            <label className="fm-field"><span>Certification</span>
+              <select value={f.certState} onChange={(e) => set("certState", e.target.value)}><option>Pending</option><option>Sufficient</option><option>Insufficient</option><option>Not required</option></select>
+            </label>
+            <label className="fm-field"><span>Next deadline</span><input value={f.deadlineWhat} onChange={(e) => set("deadlineWhat", e.target.value)} /></label>
+            <label className="fm-field"><span>Due date</span><input type="date" value={f.deadlineWhen} onChange={(e) => set("deadlineWhen", e.target.value)} /></label>
+            <label className="fm-field fm-col2"><span>Summary <span style={{ color: "var(--muted-2)", fontWeight: 400 }}>(optional)</span></span><input value={f.summary} onChange={(e) => set("summary", e.target.value)} placeholder="Short case summary" /></label>
+          </div>
+          <div className="guard" style={{ marginTop: 18 }}><span>◆</span> Cases start with zero used balances. The AI never opens, designates, or denies a case — this is an HR action.</div>
+        </div>
+        <div className="lt-foot">
+          <span className="lt-gen">◆ {draft.name ? "Imported from roster" : "Manual intake"} · recorded under the signed-in HR user</span>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button className="fm-btn ghost" style={{ padding: "7px 13px", fontSize: 13 }} onClick={onClose}>Cancel</button>
+            <button className="fm-btn brass" style={{ padding: "7px 13px", fontSize: 13 }} disabled={!valid} onClick={save}>Create case</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ---------------- shell ---------------- */
 export default function App() {
   const [tab, setTab] = useState("dash");
   const [caseId, setCaseId] = useState(null);
+  const [cases, setCases] = useState(CASES);
+  const [draft, setDraft] = useState(null); // null = closed; object = open (optionally prefilled)
   const go = (t, id = null) => { setTab(t); setCaseId(id); };
+  const startCase = (prefill = {}) => setDraft(prefill);
+  const saveCase = (newCase) => { setCases((cs) => [...cs, newCase]); setDraft(null); go("cases", newCase.id); };
   const tabs = [["dash", "Dashboard"], ["cases", "Cases"], ["emp", "Roster & Hours"], ["cert", "Certifications"], ["notice", "Notices"], ["ai", "Assistant"]];
   return (
     <div className="fm-root">
@@ -771,13 +875,14 @@ export default function App() {
       </div>
       <div className="fm-shell">
         <div className="fm-body">
-          {tab === "dash" && <Dashboard go={go} />}
-          {tab === "cases" && <Cases openId={caseId} go={go} />}
-          {tab === "emp" && <Employees />}
+          {tab === "dash" && <Dashboard go={go} cases={cases} />}
+          {tab === "cases" && <Cases openId={caseId} go={go} cases={cases} startCase={startCase} />}
+          {tab === "emp" && <Employees startCase={startCase} />}
           {tab === "cert" && <Certs />}
           {tab === "notice" && <Notices />}
-          {tab === "ai" && <Assistant />}
+          {tab === "ai" && <Assistant cases={cases} />}
         </div>
+        {draft && <NewCaseModal draft={draft} cases={cases} onClose={() => setDraft(null)} onSave={saveCase} />}
         <footer className="fm-foot">
           <span>Developed by <b>Savoi</b> · AI-enabled leave &amp; FMLA compliance</span>
           <span>Proof of concept · balances and eligibility figures are illustrative · every designation stays with HR</span>
