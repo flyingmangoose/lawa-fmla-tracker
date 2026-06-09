@@ -137,8 +137,10 @@ table.fm-tbl{width:100%;border-collapse:collapse;font-size:15.5px}
 .fm-foot b{color:var(--brass);font-weight:600}
 .fm-foot span:first-child{font-size:14px;color:var(--muted)}
 
-.tour-btn{background:transparent;border:1px solid var(--brass-2);color:var(--brass-2);font-family:'Barlow',sans-serif;font-size:13.5px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;transition:.15s}
-.tour-btn:hover{background:var(--brass-2);color:#0a2647}
+.tour-btn{background:var(--brass-2);border:1px solid var(--brass-2);color:#0a2647;font-family:'Barlow',sans-serif;font-size:14px;font-weight:700;padding:9px 16px;border-radius:8px;cursor:pointer;white-space:nowrap;transition:.15s;animation:tourpulse 2.4s ease-in-out infinite}
+.tour-btn:hover{background:#e8bd5a;border-color:#e8bd5a;animation:none}
+@keyframes tourpulse{0%{box-shadow:0 0 0 0 rgba(220,174,70,.55)}70%{box-shadow:0 0 0 9px rgba(220,174,70,0)}100%{box-shadow:0 0 0 0 rgba(220,174,70,0)}}
+@media(prefers-reduced-motion:reduce){.tour-btn{animation:none}}
 .tour-backdrop{position:fixed;inset:0;background:rgba(10,38,71,.55);z-index:70}
 .tour-catch{position:fixed;inset:0;z-index:70}
 .tour-hole{position:fixed;z-index:71;border-radius:11px;border:2px solid var(--brass-2);box-shadow:0 0 0 9999px rgba(10,38,71,.55);pointer-events:none;transition:top .25s,left .25s,width .25s,height .25s}
@@ -942,7 +944,9 @@ export default function App() {
   const [tourStep, setTourStep] = useState(-1); // -1 = inactive
   const go = (t, id = null) => { setTab(t); setCaseId(id); };
   const startCase = (prefill = {}) => setDraft(prefill);
+  const closeTour = () => { try { localStorage.setItem("lawaTourSeen", "1"); } catch (e) {} setTourStep(-1); };
   useEffect(() => { if (tourStep >= 0) { setTab(TOUR[tourStep].tab); setCaseId(null); setDraft(null); } }, [tourStep]);
+  useEffect(() => { try { if (!localStorage.getItem("lawaTourSeen")) setTourStep(0); } catch (e) {} }, []);
   const saveCase = (newCase) => { setCases((cs) => [...cs, newCase]); setDraft(null); go("cases", newCase.id); };
   const tabs = [["dash", "Dashboard"], ["cases", "Cases"], ["emp", "Roster & Hours"], ["cert", "Certifications"], ["notice", "Notices"], ["ai", "Assistant"]];
   return (
@@ -987,7 +991,7 @@ export default function App() {
           {tab === "ai" && <Assistant cases={cases} />}
         </div>
         {draft && <NewCaseModal draft={draft} cases={cases} onClose={() => setDraft(null)} onSave={saveCase} />}
-        {tourStep >= 0 && <Tour step={tourStep} setStep={setTourStep} onClose={() => setTourStep(-1)} />}
+        {tourStep >= 0 && <Tour step={tourStep} setStep={setTourStep} onClose={closeTour} />}
         <footer className="fm-foot">
           <span>Developed by <b>Savoi</b> · AI-enabled leave &amp; FMLA compliance</span>
           <span>Proof of concept · balances and eligibility figures are illustrative · every designation stays with HR</span>
