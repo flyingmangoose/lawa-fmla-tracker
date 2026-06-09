@@ -137,6 +137,19 @@ table.fm-tbl{width:100%;border-collapse:collapse;font-size:15.5px}
 .fm-foot b{color:var(--brass);font-weight:600}
 .fm-foot span:first-child{font-size:14px;color:var(--muted)}
 
+.tour-btn{background:transparent;border:1px solid var(--brass-2);color:var(--brass-2);font-family:'Barlow',sans-serif;font-size:13.5px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;transition:.15s}
+.tour-btn:hover{background:var(--brass-2);color:#0a2647}
+.tour-backdrop{position:fixed;inset:0;background:rgba(10,38,71,.55);z-index:70}
+.tour-catch{position:fixed;inset:0;z-index:70}
+.tour-hole{position:fixed;z-index:71;border-radius:11px;border:2px solid var(--brass-2);box-shadow:0 0 0 9999px rgba(10,38,71,.55);pointer-events:none;transition:top .25s,left .25s,width .25s,height .25s}
+.tour-card{position:fixed;z-index:72;background:#fff;border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.32);padding:18px 20px;animation:fu .25s ease both}
+.tour-card .tour-step{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--brass);letter-spacing:.4px;margin-bottom:6px}
+.tour-card h4{font-family:'Barlow Semi Condensed',sans-serif;font-size:18px;font-weight:600;margin:0 0 7px;color:var(--ink)}
+.tour-card p{font-size:14px;line-height:1.55;color:var(--ink-2);margin:0 0 16px}
+.tour-actions{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.tour-skip{background:none;border:none;color:var(--muted-2);font-family:'Barlow',sans-serif;font-size:13px;cursor:pointer;padding:4px}
+.tour-skip:hover{color:var(--muted)}
+
 .fm-form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .fm-field{display:flex;flex-direction:column;gap:5px}
 .fm-field.fm-col2{grid-column:1 / -1}
@@ -275,7 +288,7 @@ function Dashboard({ go, cases }) {
       <h2 className="fm-h">Leave compliance overview</h2>
       <p className="fm-sub">Los Angeles World Airports · 3,200 employees · {cases.length} active cases</p>
 
-      <div className="fm-grid g4" style={{ marginBottom: 14 }}>
+      <div className="fm-grid g4" style={{ marginBottom: 14 }} data-tour="kpis">
         <div className="fm-card fm-kpi"><div className="n">{cases.length}</div><div className="l">Active cases</div><div className="d" style={{ color: "var(--green)" }}>All within entitlement</div></div>
         <div className="fm-card fm-kpi"><div className="n">{dueSoon}</div><div className="l">Deadlines ≤ 14 days</div><div className="d" style={{ color: "var(--amber)" }}>Action required</div></div>
         <div className="fm-card fm-kpi"><div className="n">{toCure}</div><div className="l">Certs to cure</div><div className="d" style={{ color: "var(--red)" }}>Cure clock running</div></div>
@@ -304,7 +317,7 @@ function Dashboard({ go, cases }) {
           </table>
         </div>
 
-        <div className="fm-card" style={{ background: "var(--paper-2)" }}>
+        <div className="fm-card" style={{ background: "var(--paper-2)" }} data-tour="ai-flags">
           <div className="fm-sec-h"><h3>AI surfaced for review</h3><Tag c="t-grey">Human decides</Tag></div>
           {flags.map((c) => (
             <div key={c.id} className={`fm-alert ${c.flag.tag === "t-red" ? "al-amber" : "al-blue"}`} style={{ marginBottom: 9, cursor: "pointer" }} onClick={() => go("cases", c.id)}>
@@ -343,7 +356,7 @@ function Employees({ startCase }) {
         )}
       </div>
 
-      <div className="fm-card">
+      <div className="fm-card" data-tour="roster">
         <div className="fm-sec-h"><h3>Approaching eligibility</h3><Tag c="t-blue">Auto-computed</Tag></div>
         <table className="fm-tbl">
           <thead><tr><th>Employee</th><th>Hours (rolling 12 mo)</th><th>Tenure</th><th>Status</th><th></th></tr></thead>
@@ -374,9 +387,9 @@ function Cases({ openId, go, cases, startCase }) {
           <h2 className="fm-h">Leave cases</h2>
           <p className="fm-sub" style={{ margin: 0 }}>{cases.length} active · federal FMLA stacked with California CFRA &amp; PDL where applicable</p>
         </div>
-        <button className="fm-btn brass" onClick={() => startCase()}>+ New Case</button>
+        <button className="fm-btn brass" onClick={() => startCase()} data-tour="new-case">+ New Case</button>
       </div>
-      <div className="fm-card">
+      <div className="fm-card" data-tour="cases-table">
         <table className="fm-tbl">
           <thead><tr><th>Case / Employee</th><th>Reason</th><th>Type</th><th>Entitlement</th><th>Status</th></tr></thead>
           <tbody>
@@ -609,7 +622,7 @@ function Certs() {
       <p className="fm-sub">Upload a WH-380 or provider note. The tool extracts dates, frequency, and duration, then checks sufficiency under the regulations.</p>
       <LetterModal letter={letter} onClose={() => setLetter(null)} />
 
-      <div className="fm-grid g2">
+      <div className="fm-grid g2" data-tour="certs">
         <div className="fm-card">
           <div className="fm-sec-h"><h3>WH-380-F · Robert Hayes</h3>{!parsed ? <button className="fm-btn brass" onClick={() => setParsed(true)}>⤴ Upload &amp; parse</button> : <Tag c="t-red">Insufficient</Tag>}</div>
           {!parsed ? (
@@ -675,7 +688,7 @@ function Notices() {
       <h2 className="fm-h">DOL notices</h2>
       <p className="fm-sub">The three required FMLA notices, pre-populated from case data and held for human sign-off before release.</p>
       <LetterModal letter={letter} onClose={() => setLetter(null)} />
-      <div className="fm-card">
+      <div className="fm-card" data-tour="notices">
         <table className="fm-tbl">
           <thead><tr><th>Notice</th><th>Employee</th><th>Statutory timing</th><th>Status</th><th></th></tr></thead>
           <tbody>
@@ -735,7 +748,7 @@ function Assistant({ cases }) {
     <div className="fade">
       <h2 className="fm-h">FMLA assistant</h2>
       <p className="fm-sub">A grounded, self-service assistant for HR staff, managers, and employees — answers without an HR ticket. This demo runs on live Claude.</p>
-      <div className="chat-wrap">
+      <div className="chat-wrap" data-tour="assistant">
         <div className="chat-log" ref={logRef}>
           {msgs.map((m, i) => (
             <div className="msg" key={i} style={{ flexDirection: m.role === "u" ? "row-reverse" : "row" }}>
@@ -834,14 +847,102 @@ function NewCaseModal({ draft, cases, onClose, onSave }) {
   );
 }
 
+/* ---------------- guided tour ---------------- */
+const TOUR = [
+  { tab: "dash", target: null, title: "Welcome to LAWA Leave & FMLA", body: "A 60-second tour of how HR runs federal FMLA stacked with California CFRA & PDL — with AI assisting and humans making every call. Use Next / Back, ← → keys, or Esc to exit." },
+  { tab: "dash", target: "kpis", title: "Compliance at a glance", body: "Live counts of active cases, deadlines inside 14 days, certifications to cure, and employees approaching eligibility — all computed from case data, not hand-tracked." },
+  { tab: "dash", target: "ai-flags", title: "AI surfaces, HR decides", body: "The AI flags patterns and risks for review — an absence cluster, an incomplete cert, a nearly-exhausted entitlement. It never makes a designation; that stays with HR." },
+  { tab: "cases", target: "cases-table", title: "Stacked leave, tracked", body: "Each case stacks FMLA, CFRA and PDL where they apply. Click any row to open the balance engine and the designation decision — recorded under the signed-in HR user." },
+  { tab: "cases", target: "new-case", title: "Create or import a case", body: "Open a new case from scratch here — or import one by promoting an employee from the Roster tab, which prefills their details." },
+  { tab: "emp", target: "roster", title: "Eligibility from a Workday export", body: "No HRIS integration: the 1,250-hour / 12-month test runs on an uploaded payroll export. Hit “Start case” on a row to import that employee into a new case." },
+  { tab: "cert", target: "certs", title: "Certification intake", body: "Upload a WH-380; the tool extracts dates, frequency and duration, checks sufficiency, and — if it’s incomplete — drafts a return-for-cure letter for HR to send." },
+  { tab: "notice", target: "notices", title: "DOL notices, ready to sign", body: "The required FMLA notices pre-fill from case data so statutory deadlines aren’t missed — but nothing leaves the system without an HR signature." },
+  { tab: "ai", target: "assistant", title: "A grounded assistant", body: "Ask about balances, deadlines or eligibility and get answers grounded in live case data. Ask it to deny a leave and it hands the decision back to you — that boundary is the design." },
+  { tab: "ai", target: null, title: "That’s the tour", body: "AI does the busywork — parsing, drafting, flagging, computing. Every designation stays with HR. Explore freely, or restart the tour any time from the top bar." },
+];
+
+function Tour({ step, setStep, onClose }) {
+  const s = TOUR[step];
+  const [rect, setRect] = useState(null);
+
+  useEffect(() => {
+    if (!s || !s.target) { setRect(null); return; }
+    const measure = () => {
+      const el = document.querySelector(`[data-tour="${s.target}"]`);
+      setRect(el ? el.getBoundingClientRect() : null);
+    };
+    const t1 = setTimeout(() => {
+      const el = document.querySelector(`[data-tour="${s.target}"]`);
+      if (el) el.scrollIntoView({ block: "nearest" });
+      measure();
+    }, 160);
+    const t2 = setTimeout(measure, 440); // re-measure after the view fade settles
+    window.addEventListener("resize", measure);
+    window.addEventListener("scroll", measure, true);
+    return () => { clearTimeout(t1); clearTimeout(t2); window.removeEventListener("resize", measure); window.removeEventListener("scroll", measure, true); };
+  }, [step, s]);
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+      else if (e.key === "ArrowRight") setStep((p) => Math.min(TOUR.length - 1, p + 1));
+      else if (e.key === "ArrowLeft") setStep((p) => Math.max(0, p - 1));
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [setStep, onClose]);
+
+  if (!s) return null;
+  const pad = 8;
+  const hole = rect ? { top: rect.top - pad, left: rect.left - pad, width: rect.width + pad * 2, height: rect.height + pad * 2 } : null;
+
+  const cardW = 360;
+  let card;
+  if (hole) {
+    const left = Math.min(Math.max(14, hole.left), window.innerWidth - cardW - 14);
+    const below = hole.top + hole.height + 14;
+    card = (window.innerHeight - below > 220)
+      ? { top: below, left }
+      : { bottom: window.innerHeight - hole.top + 14, left };
+  } else {
+    card = { top: "50%", left: "50%", transform: "translate(-50%,-50%)" };
+  }
+
+  const last = step === TOUR.length - 1;
+  return (
+    <>
+      {hole ? (
+        <>
+          <div className="tour-catch" />
+          <div className="tour-hole" style={hole} />
+        </>
+      ) : <div className="tour-backdrop" />}
+      <div className="tour-card" style={{ width: cardW, ...card }}>
+        <div className="tour-step">Step {step + 1} of {TOUR.length}</div>
+        <h4>{s.title}</h4>
+        <p>{s.body}</p>
+        <div className="tour-actions">
+          <button className="tour-skip" onClick={onClose}>Skip tour</button>
+          <div style={{ display: "flex", gap: 8 }}>
+            {step > 0 && <button className="fm-btn ghost" style={{ padding: "8px 14px", fontSize: 13 }} onClick={() => setStep((p) => p - 1)}>Back</button>}
+            <button className="fm-btn brass" style={{ padding: "8px 14px", fontSize: 13 }} onClick={() => (last ? onClose() : setStep((p) => p + 1))}>{last ? "Done" : "Next"}</button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
 /* ---------------- shell ---------------- */
 export default function App() {
   const [tab, setTab] = useState("dash");
   const [caseId, setCaseId] = useState(null);
   const [cases, setCases] = useState(CASES);
   const [draft, setDraft] = useState(null); // null = closed; object = open (optionally prefilled)
+  const [tourStep, setTourStep] = useState(-1); // -1 = inactive
   const go = (t, id = null) => { setTab(t); setCaseId(id); };
   const startCase = (prefill = {}) => setDraft(prefill);
+  useEffect(() => { if (tourStep >= 0) { setTab(TOUR[tourStep].tab); setCaseId(null); setDraft(null); } }, [tourStep]);
   const saveCase = (newCase) => { setCases((cs) => [...cs, newCase]); setDraft(null); go("cases", newCase.id); };
   const tabs = [["dash", "Dashboard"], ["cases", "Cases"], ["emp", "Roster & Hours"], ["cert", "Certifications"], ["notice", "Notices"], ["ai", "Assistant"]];
   return (
@@ -859,9 +960,12 @@ export default function App() {
             </div>
             <div><h1>LAWA Leave &amp; FMLA</h1><div className="sub">Los Angeles World Airports · HR Shared Services</div></div>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-            <span className="fm-poc">Proof of Concept</span>
-            <div className="fm-by">Developed by <b>Savoi</b></div>
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <button className="tour-btn" onClick={() => setTourStep(0)}>◆ Take the tour</button>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+              <span className="fm-poc">Proof of Concept</span>
+              <div className="fm-by">Developed by <b>Savoi</b></div>
+            </div>
           </div>
         </div>
       </div>
@@ -883,6 +987,7 @@ export default function App() {
           {tab === "ai" && <Assistant cases={cases} />}
         </div>
         {draft && <NewCaseModal draft={draft} cases={cases} onClose={() => setDraft(null)} onSave={saveCase} />}
+        {tourStep >= 0 && <Tour step={tourStep} setStep={setTourStep} onClose={() => setTourStep(-1)} />}
         <footer className="fm-foot">
           <span>Developed by <b>Savoi</b> · AI-enabled leave &amp; FMLA compliance</span>
           <span>Proof of concept · balances and eligibility figures are illustrative · every designation stays with HR</span>
