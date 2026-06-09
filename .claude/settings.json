@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dig *)",
+      "Bash(nslookup *)",
+      "Bash(doctl apps get *)",
+      "Bash(doctl apps list-deployments *)",
+      "Bash(doctl version)",
+      "Bash(doctl account get *)"
+    ]
+  }
+}
