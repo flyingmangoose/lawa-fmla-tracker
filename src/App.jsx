@@ -318,34 +318,92 @@ function StatBar({ used, cap, color }) {
 }
 
 /* ---------------- views ---------------- */
-function Dashboard({ go, cases, requests = [] }) {
+/* employee-request status helpers, shared by the HR and employee views */
+const isPendingReq = (r) => !(r.status.startsWith("Approved") || r.status.startsWith("Denied"));
+const reqStatusTag = (status) => (status.startsWith("Approved") ? "t-green" : status.startsWith("Denied") ? "t-red" : "t-amber");
+
+/* HR reviews a change-of-status request and makes the call — approve & designate, or deny */
+function RequestReviewModal({ req, c, onClose, onDecide }) {
+  const [note, setNote] = useState("");
+  const cap = c && c.mcgw ? 26 : 12;
+  const NOTE = {
+    lifeEvent: "Approving records the birth/placement and moves the employee from pregnancy-disability (PDL) to CFRA bonding leave. Issue an updated designation notice; bonding must conclude within 12 months of the event.",
+    absence: "Approving confirms the reported hours and draws them from the 480-hour bank. Check the episode is consistent with the certification on file.",
+    extend: "Approving extends the leave against remaining entitlement. If the entitlement is exhausted, consider the ADA interactive process instead. An updated medical certification is typically required.",
+    schedule: "Approving changes the leave schedule. Request a certification describing the medical need, expected frequency, and duration before designating.",
+    rtw: "Approving sets the return-to-work date. For a serious health condition, a fitness-for-duty certification may be required before reinstatement to the same or an equivalent role.",
+    contact: "Low-risk update to the employee's contact details. Approving simply updates the file; no leave designation changes.",
+  }[req.type] || "Review the request against the case and designate accordingly.";
+  return (
+    <div className="lt-bg" onClick={onClose}>
+      <div className="lt-sheet" style={{ width: 600 }} onClick={(e) => e.stopPropagation()}>
+        <div className="lt-head"><h4>Review request · {req.empName}</h4><button className="x" style={{ color: "#9fb0bd" }} onClick={onClose}>×</button></div>
+        <div style={{ padding: "24px 28px", maxHeight: "70vh", overflowY: "auto" }}>
+          <div className="fm-mono" style={{ fontSize: 13.4, color: "var(--muted)" }}>{req.id} · submitted {fmt(req.submitted)}</div>
+          <h3 className="fm-serif" style={{ fontSize: 21, margin: "3px 0 14px", fontWeight: 600 }}>{req.title}</h3>
+          <p style={{ fontSize: 15, color: "var(--ink-2)", lineHeight: 1.55, background: "var(--paper-2)", padding: "12px 14px", borderRadius: 9, border: "1px solid var(--line)", margin: "0 0 16px" }}>{req.detail}</p>
+
+          {c && <>
+            <h4 className="fm-serif" style={{ fontSize: 16.8, margin: "0 0 8px" }}>Case context</h4>
+            <div className="kv"><span className="k">Employee</span><span className="v">{c.name} · {c.role}</span></div>
+            <div className="kv"><span className="k">Current status</span><span className="v"><Tag c={c.statusTag}>{c.status}</Tag></span></div>
+            <div className="kv"><span className="k">FMLA used</span><span className="v">{c.used.fmla} of {cap} wks</span></div>
+            <div className="kv"><span className="k">Certification</span><span className="v">{c.cert.state}</span></div>
+            <div className="kv"><span className="k">Next deadline</span><span className="v">{c.nextDeadline.what} · {fmt(c.nextDeadline.when)}</span></div>
+          </>}
+
+          <label className="fm-field fm-col2" style={{ marginTop: 16 }}><span>Decision note <span style={{ color: "var(--muted-2)", fontWeight: 400 }}>(optional, recorded on the case)</span></span>
+            <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Approved; updated designation notice to follow" />
+          </label>
+
+          <div className="guard" style={{ marginTop: 16 }}><span>◆</span> {NOTE}</div>
+          <div className="guard" style={{ marginTop: 10 }}><span>◆</span> Recorded under the signed-in HR user. The employee sees your decision in their self-service portal. AI never approves or denies — this is your call.</div>
+        </div>
+        <div className="lt-foot">
+          <span className="lt-gen">◆ Human designation · {fmt(TODAY)}</span>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button className="fm-btn ghost" style={{ padding: "7px 13px", fontSize: 13, borderColor: "var(--red)", color: "var(--red)" }} onClick={() => onDecide("denied", note)}>Deny</button>
+            <button className="fm-btn brass" style={{ padding: "7px 13px", fontSize: 13 }} onClick={() => onDecide("approved", note)}>Approve &amp; designate</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Dashboard({ go, cases, requests = [], onReview }) {
+  const [review, setReview] = useState(null);
   const deadlines = [...cases].sort((a, b) => daysFromToday(a.nextDeadline.when) - daysFromToday(b.nextDeadline.when)).slice(0, 5);
   const flags = cases.filter((c) => c.flag);
   const dueSoon = cases.filter((c) => daysFromToday(c.nextDeadline.when) <= 14).length;
   const toCure = cases.filter((c) => c.cert.state === "Insufficient").length;
+  const pending = requests.filter(isPendingReq).length;
   return (
     <div className="fade">
       <h2 className="fm-h">Leave compliance overview</h2>
       <p className="fm-sub">Los Angeles World Airports · 3,200 employees · {cases.length} active cases</p>
 
+      {review && <RequestReviewModal req={review} c={cases.find((x) => x.id === review.caseId)} onClose={() => setReview(null)} onDecide={(decision, note) => { onReview(review.id, decision, note); setReview(null); }} />}
+
       {requests.length > 0 && (
         <div className="fm-card" style={{ marginBottom: 14, borderColor: "var(--brass-2)", background: "var(--paper-2)" }} data-tour="ess-requests">
-          <div className="fm-sec-h"><h3>Employee self-service requests</h3><Tag c="t-amber">{requests.length} awaiting review</Tag></div>
+          <div className="fm-sec-h"><h3>Employee self-service requests</h3>{pending > 0 ? <Tag c="t-amber">{pending} awaiting review</Tag> : <Tag c="t-green">All reviewed</Tag>}</div>
           <table className="fm-tbl">
-            <thead><tr><th>Employee</th><th>Change requested</th><th>Detail</th><th>Submitted</th><th></th></tr></thead>
+            <thead><tr><th>Employee</th><th>Change requested</th><th>Detail</th><th>Submitted</th><th>Decision</th></tr></thead>
             <tbody>
-              {requests.map((r) => {
-                const c = cases.find((x) => x.id === r.caseId);
-                return (
-                  <tr key={r.id} className={c ? "click" : ""} onClick={() => c && go("cases", c.id)}>
-                    <td><div className="emp">{r.empName}</div><div className="role fm-mono">{r.caseId}</div></td>
-                    <td style={{ fontSize: 15 }}>{r.title}</td>
-                    <td style={{ fontSize: 14, color: "var(--muted)", maxWidth: 280 }}>{r.detail}</td>
-                    <td className="fm-mono" style={{ fontSize: 14 }}>{fmt(r.submitted)}</td>
-                    <td><Tag c="t-amber">Needs review</Tag></td>
-                  </tr>
-                );
-              })}
+              {requests.map((r) => (
+                <tr key={r.id}>
+                  <td><div className="emp">{r.empName}</div><div className="role fm-mono">{r.caseId}</div></td>
+                  <td style={{ fontSize: 15 }}>{r.title}</td>
+                  <td style={{ fontSize: 14, color: "var(--muted)", maxWidth: 280 }}>{r.detail}</td>
+                  <td className="fm-mono" style={{ fontSize: 14 }}>{fmt(r.submitted)}</td>
+                  <td style={{ textAlign: "right" }}>
+                    {isPendingReq(r)
+                      ? <button className="fm-btn brass" style={{ padding: "7px 14px", fontSize: 14 }} onClick={() => setReview(r)}>Review →</button>
+                      : <Tag c={reqStatusTag(r.status)}>{r.decision === "approved" ? "Approved" : "Denied"}</Tag>}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
           <div className="guard" style={{ marginTop: 14 }}><span>◆</span> Submitted by employees in the self-service portal. Each lands here for HR to review and designate — the request never changes a balance or status on its own.</div>
@@ -1151,9 +1209,10 @@ function EmpRequest({ c, myReqs, onSubmit }) {
                 <div>
                   <div className="emp">{r.title}</div>
                   <div style={{ fontSize: 14, color: "var(--muted)", marginTop: 2 }}>{r.detail}</div>
-                  <div className="fm-mono" style={{ fontSize: 13, color: "var(--muted-2)", marginTop: 3 }}>{r.id} · submitted {fmt(r.submitted)}</div>
+                  <div className="fm-mono" style={{ fontSize: 13, color: "var(--muted-2)", marginTop: 3 }}>{r.id} · submitted {fmt(r.submitted)}{r.decidedOn ? ` · decided ${fmt(r.decidedOn)}` : ""}</div>
+                  {r.note && <div style={{ fontSize: 13.6, color: "var(--ink-2)", marginTop: 4, fontStyle: "italic" }}>HR note: {r.note}</div>}
                 </div>
-                <Tag c="t-amber">{r.status}</Tag>
+                <Tag c={reqStatusTag(r.status)}>{r.status}</Tag>
               </div>
             ))}
           </div>
@@ -1169,7 +1228,7 @@ function EmpRequest({ c, myReqs, onSubmit }) {
 function EmpTime({ c, myReqs, onSubmit }) {
   const [open, setOpen] = useState(false);
   const absences = myReqs.filter((r) => r.type === "absence");
-  const reported = absences.reduce((s, r) => s + (parseFloat((r.detail.match(/, ([\d.]+) hour/) || [])[1]) || 0), 0);
+  const pendingHrs = absences.filter(isPendingReq).reduce((s, r) => s + (parseFloat((r.detail.match(/, ([\d.]+) hour/) || [])[1]) || 0), 0);
   const absType = changeTypesFor(c).find((t) => t.key === "absence");
   return (
     <div className="fade">
@@ -1178,7 +1237,7 @@ function EmpTime({ c, myReqs, onSubmit }) {
 
       <div className="fm-grid g3" style={{ marginBottom: 20 }}>
         <div className="fm-card fm-kpi"><div className="n">{c.used.fmla}</div><div className="l">Weeks used (confirmed)</div><div className="d" style={{ color: "var(--muted)" }}>of 12 · HR-confirmed</div></div>
-        <div className="fm-card fm-kpi"><div className="n">{absences.length}</div><div className="l">Absences you've reported</div><div className="d" style={{ color: "var(--amber)" }}>{reported} hrs awaiting HR confirmation</div></div>
+        <div className="fm-card fm-kpi"><div className="n">{absences.length}</div><div className="l">Absences you've reported</div><div className="d" style={{ color: "var(--amber)" }}>{pendingHrs} hrs awaiting HR confirmation</div></div>
         <div className="fm-card fm-kpi"><div className="n">{(12 - c.used.fmla).toFixed(1)}</div><div className="l">Weeks remaining</div><div className="d" style={{ color: "var(--green)" }}>protected time left</div></div>
       </div>
 
@@ -1189,7 +1248,7 @@ function EmpTime({ c, myReqs, onSubmit }) {
             <thead><tr><th>Reported</th><th>Details</th><th>Status</th></tr></thead>
             <tbody>
               {absences.map((r) => (
-                <tr key={r.id}><td className="fm-mono">{fmt(r.submitted)}</td><td>{r.detail}</td><td><Tag c="t-amber">{r.status}</Tag></td></tr>
+                <tr key={r.id}><td className="fm-mono">{fmt(r.submitted)}</td><td>{r.detail}</td><td><Tag c={reqStatusTag(r.status)}>{r.status}</Tag></td></tr>
               ))}
             </tbody>
           </table>
@@ -1449,6 +1508,7 @@ export default function App() {
   useEffect(() => { try { if (!localStorage.getItem("lawaTourSeen")) setTourStep(0); } catch (e) {} }, []);
   const saveCase = (newCase) => { setCases((cs) => [...cs, newCase]); setDraft(null); go("cases", newCase.id); };
   const submitRequest = (req) => setRequests((rs) => [{ ...req, id: `REQ-${String(rs.length + 1).padStart(4, "0")}`, submitted: TODAY, status: "Submitted — awaiting HR review" }, ...rs]);
+  const reviewRequest = (id, decision, note) => setRequests((rs) => rs.map((r) => (r.id === id ? { ...r, decision, note: note || "", decidedOn: TODAY, status: decision === "approved" ? "Approved by HR" : "Denied by HR" } : r)));
   const empCase = cases.find((c) => c.id === empId) || cases[0];
   const tabs = [["dash", "Dashboard"], ["cases", "Cases"], ["emp", "Roster & Hours"], ["cert", "Certifications"], ["notice", "Notices"], ["ai", "Assistant"]];
   return (
@@ -1496,7 +1556,7 @@ export default function App() {
           </div>
           <div className="fm-shell">
             <div className="fm-body">
-              {tab === "dash" && <Dashboard go={go} cases={cases} requests={requests} />}
+              {tab === "dash" && <Dashboard go={go} cases={cases} requests={requests} onReview={reviewRequest} />}
               {tab === "cases" && <Cases openId={caseId} go={go} cases={cases} startCase={startCase} />}
               {tab === "emp" && <Employees startCase={startCase} />}
               {tab === "cert" && <Certs />}
